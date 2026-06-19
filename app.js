@@ -285,8 +285,10 @@ document.addEventListener('DOMContentLoaded', () => {
   const projectForm = document.getElementById('project-form');
   const successDialog = document.getElementById('success-dialog');
   const closeDialogBtn = document.getElementById('btn-close-dialog');
+  const submitBtn = document.getElementById('btn-submit');
+  const formErrorMessage = document.getElementById('form-error-message');
 
-  if (projectForm && successDialog && closeDialogBtn) {
+  if (projectForm && successDialog && closeDialogBtn && submitBtn) {
     projectForm.addEventListener('submit', (e) => {
       e.preventDefault(); // Stop standard redirect page reload
       
@@ -294,9 +296,67 @@ document.addEventListener('DOMContentLoaded', () => {
       const isFormValid = projectForm.checkValidity();
       
       if (isFormValid) {
-        // Trigger dialog showModal
-        successDialog.showModal();
-        projectForm.reset(); // Reset form field values
+        // Clear any previous error messages
+        if (formErrorMessage) {
+          formErrorMessage.style.display = 'none';
+          formErrorMessage.textContent = '';
+        }
+
+        // Show loading state
+        const originalBtnText = submitBtn.innerHTML;
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = `<span class="pulse-dot" style="margin-right: 8px;"></span> Sending...`;
+
+        const formData = {
+          name: document.getElementById('form-name').value,
+          email: document.getElementById('form-email').value,
+          service: document.getElementById('form-service').value,
+          message: document.getElementById('form-message').value
+        };
+
+        fetch('./send_email.php', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(formData)
+        })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          return response.json();
+        })
+        .then(data => {
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = originalBtnText;
+
+          if (data.success) {
+            // Trigger dialog showModal
+            successDialog.showModal();
+            projectForm.reset(); // Reset form field values
+          } else {
+            // Show error banner
+            if (formErrorMessage) {
+              formErrorMessage.textContent = data.message || 'Failed to submit inquiry. Please try again.';
+              formErrorMessage.style.display = 'block';
+            } else {
+              alert(data.message || 'Failed to submit inquiry. Please try again.');
+            }
+          }
+        })
+        .catch(error => {
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = originalBtnText;
+          console.error('Error submitting form:', error);
+          
+          if (formErrorMessage) {
+            formErrorMessage.textContent = 'Failed to connect to the server. Please check your network connection and try again.';
+            formErrorMessage.style.display = 'block';
+          } else {
+            alert('Failed to connect to the server. Please check your network connection and try again.');
+          }
+        });
       }
     });
 

@@ -427,18 +427,20 @@
           <form id="project-form">
             <h4 class="form-title">Start a Project Consultation</h4>
             
+            <div id="form-error-message" class="form-error-banner" style="display: none; padding: 10px; margin-bottom: 15px; background: rgba(220, 38, 38, 0.2); border: 1px solid rgba(220, 38, 38, 0.4); border-radius: 6px; color: #fca5a5; font-size: 14px; text-align: center;"></div>
+            
             <div class="input-group">
-              <input type="text" id="form-name" required placeholder=" " autocomplete="name">
+              <input type="text" id="form-name" name="name" required placeholder=" " autocomplete="name">
               <label for="form-name">Full Name</label>
             </div>
 
             <div class="input-group">
-              <input type="email" id="form-email" required placeholder=" " autocomplete="email">
+              <input type="email" id="form-email" name="email" required placeholder=" " autocomplete="email">
               <label for="form-email">Corporate Email</label>
             </div>
 
             <div class="input-group">
-              <select id="form-service" required>
+              <select id="form-service" name="service" required>
                 <option value="" disabled selected hidden>Select Service Category</option>
                 <option value="ai-agents">Autonomous AI Agents</option>
                 <option value="software">Custom Software &amp; Apps</option>
@@ -449,7 +451,7 @@
             </div>
 
             <div class="input-group">
-              <textarea id="form-message" required placeholder=" " rows="4"></textarea>
+              <textarea id="form-message" name="message" required placeholder=" " rows="4"></textarea>
               <label for="form-message">Briefly outline your project requirements...</label>
             </div>
 
